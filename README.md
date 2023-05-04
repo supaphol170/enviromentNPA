@@ -1,2 +1,2 @@
-# enviromentNPA
-use for LAB 2-10 in class Chotipat
+# environmentNPA
+This repo is assignment for Network Programmability and Automation
