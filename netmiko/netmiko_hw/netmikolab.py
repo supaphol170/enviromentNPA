@@ -1,24 +1,29 @@
+import re
 from netmiko import ConnectHandler
-def get_data_from_device(device_params):
+
+def get_data_from_device(device_params, cmd: str):
     with ConnectHandler(**device_params) as ssh:
-        result_shipintbr = ssh.send_command("show cdp nei")
+        result_shipintbr = ssh.send_command(cmd)
         return result_shipintbr
 
-def get_ip(device_params, intf):
-    data = get_data_from_device(device_params)
+def get_ip(device_params):
+    int_dict = {}
+    data = get_data_from_device(device_params, "show ip int b")
     result = data.strip().split('\n')
     for line in result[1:]:
-        words = line.split()
-        if words[0][0] == intf[0] and words[0][-3:] == intf[1:]:
-            return words[1]
+        match = re.search("(\w)+.*((\w)+ | (\d{1,3}\.){3}(\d{1,3}))", line).group().split()
+        int_dict[match[0]] = match[1]
+    return int_dict
 
 def get_int(device_params):
     int_lst = []
     data = get_data_from_device(device_params)
     result = data.strip().split('\n')
     for line in result[5:-2]:
-        words = line.split()
-        int_lst.append([words[0].split('.')[0], str(words[1] + words[2]), str(words[-2] + words[-1])])
+        dev = re.search("^(\w\d)", line)
+        match = re.search("(\w)+ (\d+/\d+).*(\w)+ (\d+/\d+)", line).group().split()
+        local, remote = str(match[0] + match[1]), str(match[-2] + match[-1])
+        int_lst.append([local,remote])
     return int_lst
 
 def conf_desc(device_params, int_lst: list):
@@ -41,6 +46,6 @@ if __name__ == "__main__":
             "username": username,
             "password": password
         }
-
-        interfaces = get_int(device_params)
-        conf_desc(device_params, interfaces)
+        #interfaces = get_int(device_params)
+        #conf_desc(device_params, interfaces)
+    print(get_ip(device_params))
