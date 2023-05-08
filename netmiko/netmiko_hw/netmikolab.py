@@ -30,17 +30,17 @@ def conf_desc(device_params, int_lst: list):
             print(result)
 
 if __name__ == "__main__":
-    device_ip = "172.31.104.4"
+    device_ip = ["172.31.104.4", "172.31.104.5", "172.31.104.6"]
     username = "admin"
     password = "cisco"
 
-    device_params = {
-        "ip": device_ip,
-        "device_type": "cisco_ios",
-        "username": username,
-        "password": password
-    }
+    for ip in device_ip:
+        device_params = {
+            "ip": ip,
+            "device_type": "cisco_ios",
+            "username": username,
+            "password": password
+        }
 
-    #print(get_ip(device_params, "G0/0"))
-    interfaces = get_int(device_params)
-    conf_desc(device_params, interfaces)
+        interfaces = get_int(device_params)
+        conf_desc(device_params, interfaces)
