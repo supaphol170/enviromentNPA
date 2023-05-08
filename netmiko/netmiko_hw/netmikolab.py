@@ -21,8 +21,13 @@ def get_int(device_params):
         int_lst.append([words[0].split('.')[0], str(words[1] + words[2]), str(words[-2] + words[-1])])
     return int_lst
 
-def conf_desc(int_dict):
-    pass
+def conf_desc(device_params, int_lst: list):
+    with ConnectHandler(**device_params) as ssh:
+        for int in int_lst:
+            desc = f"Connect to {int[-1]} of {int[0]}"
+            cmd = [f"int {int[1]}", f"desc {desc}", "end"]
+            result = ssh.send_config_set(cmd)
+            print(result)
 
 if __name__ == "__main__":
     device_ip = "172.31.104.4"
@@ -37,4 +42,5 @@ if __name__ == "__main__":
     }
 
     #print(get_ip(device_params, "G0/0"))
-    print(get_int(device_params))
+    interfaces = get_int(device_params)
+    conf_desc(device_params, interfaces)
