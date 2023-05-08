@@ -13,13 +13,16 @@ def get_ip(device_params, intf):
             return words[1]
 
 def get_int(device_params):
-    int_dict = {}
+    int_lst = []
     data = get_data_from_device(device_params)
     result = data.strip().split('\n')
     for line in result[5:-2]:
         words = line.split()
-        int_dict[str(words[1] + words[2])] = str(words[-2] + words[-1])
-    return int_dict
+        int_lst.append([words[0].split('.')[0], str(words[1] + words[2]), str(words[-2] + words[-1])])
+    return int_lst
+
+def conf_desc(int_dict):
+    pass
 
 if __name__ == "__main__":
     device_ip = "172.31.104.4"
